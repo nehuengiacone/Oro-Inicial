@@ -1,0 +1,57 @@
+LOCAL lcDirectorio as String,;
+	  lcDirectorioClases as String,;
+	  lcDirectorioPrgs as String,;
+	  lcConnectionString as String
+	  
+lcDirectorio = FULLPATH(CURDIR())
+lcDirectorioClases = "clases"
+lcDirectorioPrgs = "prgs"
+lcDirectorioMenu = "menu"
+
+SET DEFAULT TO (lcDirectorio)
+SET PATH TO ADDBS(lcDirectorio)
+SET PATH TO (lcDirectorioClases) ADDITIVE 
+SET PATH TO (lcDirectorioPrgs) ADDITIVE 
+SET PATH TO (lcDirectorioMenu) ADDITIVE 
+
+SET PROCEDURE TO (lcDirectorioPrgs + "\funciones") ADDITIVE 
+SET PROCEDURE TO (lcDirectorioPrgs + "\salir") ADDITIVE
+SET CLASSLIB TO (lcDirectorioClases + "\App") ADDITIVE  
+SET CLASSLIB TO (lcDirectorioClases + "\Login") ADDITIVE
+SET CLASSLIB TO (lcDirectorioClases + "\Colecciones") ADDITIVE 
+SET CLASSLIB TO (lcDirectorioClases + "\Menu") ADDITIVE  
+
+
+
+conexion = SQLSTRINGCONNECT("driver={sql server native client 11.0};server=deonicsapp01\deonicsapp01;database=foxpruebas;trusted_connection=yes")
+
+*!*	bd = SQLEXEC(conexion, "create database nuevatabla")
+
+*!*	IF bd > 0 then
+*!*		WAIT WINDOW "base de datos creada"
+*!*	ELSE
+*!*		WAIT WINDOW "paso algo"
+*!*	ENDIF
+
+tabla = ""
+
+TEXT TO tabla TEXTMERGE noshow
+	CREATE TABLE persona(
+		id int primary key,
+		nombre varchar(50),
+		edad int default 1
+	)
+endtext
+transa = SQLEXEC(conexion, "begin transaction")
+WAIT WINDOW transa
+bd = SQLEXEC(conexion, tabla)
+
+IF bd > 0 then
+	WAIT WINDOW "base de datos creada"
+	transa = SQLEXEC(conexion, "commit")
+ELSE
+	WAIT WINDOW "paso algo"
+	transa = SQLEXEC(conexion, "rollback")
+ENDIF
+
+SQLSETPROP(conexion,"Transactions", 2)

@@ -1,0 +1,72 @@
+LOCAL lcDirectorio as String,;
+	  lcDirectorioClases as String,;
+	  lcDirectorioPrgs as String,;
+	  lcDirectorioImgs as String,;
+	  lcDirectorioReportes as String,;
+	  lcConnectionString as String
+	  
+PUBLIC oApp as Object
+
+lcDirectorio = FULLPATH(CURDIR())
+lcDirectorioClases = "clases"
+lcDirectorioPrgs = "prgs"
+lcDirectorioMenu = "menu"
+lcDirectorioImgs = "assets\imgs"
+lcDirectorioReportes = "reportes"
+lcDirectorioDBC = "data\oroinicial.dbc"
+
+SET DEFAULT TO (lcDirectorio)
+SET PATH TO ADDBS(lcDirectorio)
+SET PATH TO (lcDirectorioClases) ADDITIVE
+SET PATH TO (lcDirectorioDBC) ADDITIVE 
+SET PATH TO (lcDirectorioPrgs) ADDITIVE 
+SET PATH TO (lcDirectorioMenu) ADDITIVE
+SET PATH TO (lcDirectorioImgs) ADDITIVE 
+SET PATH TO (lcDirectorioReportes) ADDITIVE 
+
+SET DATE DMY
+SET DELETED ON
+SET TALK OFF
+SET SYSMENU ON TO (lcDirectorioMenu + "\menu")
+SET STATUS BAR OFF 
+SET SAFETY OFF
+
+*!*	DO (lcDirectorioMenu + "\menu.mpr")
+
+SET PROCEDURE TO (lcDirectorioPrgs + "\funciones") ADDITIVE 
+SET PROCEDURE TO (lcDirectorioPrgs + "\salir") ADDITIVE
+SET CLASSLIB TO (lcDirectorioClases + "\App") ADDITIVE  
+SET CLASSLIB TO (lcDirectorioClases + "\Login") ADDITIVE
+SET CLASSLIB TO (lcDirectorioClases + "\Colecciones") ADDITIVE 
+SET CLASSLIB TO (lcDirectorioClases + "\Castillos") ADDITIVE 
+SET CLASSLIB TO (lcDirectorioClases + "\Carpetas") ADDITIVE 
+SET CLASSLIB TO (lcDirectorioClases + "\Menu") ADDITIVE
+SET CLASSLIB TO (lcDirectorioClases + "\TestApp") ADDITIVE  
+SET CLASSLIB TO (lcDirectorioClases + "\Modales") ADDITIVE  
+
+_Screen.WindowState = 2
+_Screen.Caption = "ORO INICIAL - MITOS Y LEYENDAS"
+
+PUBLIC oForm as Form
+oForm = CREATEOBJECT("frmLogin")
+*!*	oForm = CREATEOBJECT("frmTestApp")
+oForm.show()
+
+lcConnectionString = leerTxt(lcDirectorio, "ConnectionString.txt")
+
+oApp = CREATEOBJECT("AppController")
+
+WITH oApp
+	.setDirectorioPrincipal(lcDirectorio)
+	.setDirectorioClases(lcDirectorioClases)
+	.setDirectorioPrgs(lcDirectorioPrgs)
+	.setDirectorioImgs(lcDirectorioImgs)
+	.setDirectorioReportes(lcDirectorioReportes)
+	.set_directorio_dbc(lcDirectorioDBC)
+	.conectarBD(lcConnectionString)
+ENDWITH
+
+
+ON SHUTDOWN DO salir
+READ EVENTS
+QUIT
